@@ -1,0 +1,24 @@
+# Python modules required for the Inventory Management System
+
+# Python version requriements
+ # Requires Python <= 3.11.9
+
+
+# GUI library (Tkinter is built-in)
+
+# Database access (sqlite3 is built-in)
+
+# Image processing library
+Pillow==10.2.0 # Used for handling images (PIL Fork)
+# pip install Pillow
+
+# Library for working with .docx files
+python-docx==1.1.0 # Used for generating DOCX bills
+# pip install python-docx
+
+# Library for Windows-specific API access (e.g., finding Documents folder)
+pywin32==306 # Used to dynamically find the user's Documents folder on Windows
+# pip install pywin32
+
+pyinstaller==5.1.0 # Used for packaging the application into an executable
+# pip install pyinstaller

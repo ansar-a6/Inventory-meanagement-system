@@ -1,0 +1,1 @@
+python -m PyInstaller --name="InventoryManagement" --windowed --add-data="Template.docx;." --icon="EDrop_1766988931740 2.ico" main.pyw

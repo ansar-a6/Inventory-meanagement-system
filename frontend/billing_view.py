@@ -51,10 +51,6 @@ class BillingView(ttk.Frame):
         cart_frame = ttk.LabelFrame(self, text="Shopping Cart")
         cart_frame.pack(fill=tk.X, padx=10, pady=10)
         
-        self.cart_tree = self.create_treeview(cart_frame, ["Product", "Quantity", "Price", "Total"])
-        self.cart_tree.pack(fill=tk.X, expand=True, side=tk.LEFT)
-        self.cart_tree.bind("<<TreeviewSelect>>", self.on_cart_select)
-
         cart_actions_frame = ttk.Frame(cart_frame)
         cart_actions_frame.pack(side=tk.RIGHT, padx=10)
 
@@ -67,8 +63,12 @@ class BillingView(ttk.Frame):
         self.remove_item_button = ttk.Button(cart_actions_frame, text="Remove Item", command=self.remove_from_cart, state=tk.DISABLED)
         self.remove_item_button.pack(pady=2)
 
-        confirm_bill_button = ttk.Button(cart_actions_frame, text="Confirm Bill", command=self.confirm_bill)
-        confirm_bill_button.pack(pady=5)
+        print_bill_button = ttk.Button(cart_actions_frame, text="Print Bill", command=self.confirm_bill)
+        print_bill_button.pack(pady=5)
+
+        self.cart_tree = self.create_treeview(cart_frame, ["Product", "Quantity", "Price", "Total"])
+        self.cart_tree.pack(fill=tk.X, expand=True, side=tk.LEFT)
+        self.cart_tree.bind("<<TreeviewSelect>>", self.on_cart_select)
 
     def on_mousewheel(self, event): # Added on_mousewheel function
         self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
@@ -234,19 +234,18 @@ class BillingView(ttk.Frame):
         bill_id = create_bill(items_to_bill)
         
         if bill_id:
+            from backend.billing import print_with_libreoffice
             full_docx_path = generate_bill_docx(bill_id)
             
             self.cart.clear()
             self.update_cart_display()
             self.load_products()
             
-            if messagebox.askyesno("Success", f"Bill #{bill_id} created as a DOCX file. Do you want to open it?"):
-                if full_docx_path:
-                    try:
-                        os.startfile(full_docx_path)
-                    except Exception as e:
-                        messagebox.showerror("Error", f"Could not open DOCX file: {e}")
-                else:
-                    messagebox.showerror("Error", "DOCX file not found or could not be created.")
+            if full_docx_path:
+                # Open with LibreOffice as requested
+                print_with_libreoffice(full_docx_path)
+                messagebox.showinfo("Success", f"Bill #{bill_id} generated and opened in LibreOffice.")
+            else:
+                messagebox.showerror("Error", "Bill created in database, but DOCX generation failed.")
         else:
             messagebox.showerror("Error", "Failed to create the bill. Check stock levels.")

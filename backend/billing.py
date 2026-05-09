@@ -153,6 +153,37 @@ def fill_bill(template_path, output_path, items, date_str):
         print(f"An unexpected error occurred: {e}")
         return False
 
+import subprocess
+
+def print_with_libreoffice(file_path):
+    """
+    Uses LibreOffice to open the generated bill. 
+    It can also be configured to print directly or convert to PDF.
+    """
+    try:
+        # Try to find LibreOffice in common paths if not in PATH
+        soffice_path = "soffice" # Default if in PATH
+        common_paths = [
+            r"C:\Program Files\LibreOffice\program\soffice.exe",
+            r"C:\Program Files (x86)\LibreOffice\program\soffice.exe"
+        ]
+        for path in common_paths:
+            if os.path.exists(path):
+                soffice_path = path
+                break
+        
+        # Open the file in LibreOffice
+        subprocess.Popen([soffice_path, file_path], shell=True)
+        
+        # Optional: To convert to PDF automatically in the same folder:
+        # output_dir = os.path.dirname(file_path)
+        # subprocess.run([soffice_path, "--headless", "--convert-to", "pdf", "--outdir", output_dir, file_path])
+        
+        return True
+    except Exception as e:
+        print(f"Error launching LibreOffice: {e}")
+        return False
+
 def generate_bill_docx(bill_id, filename_suffix=""):
     bill_info, bill_items_raw = get_bill_details(bill_id)
     if not bill_info:
